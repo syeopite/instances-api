@@ -12,16 +12,32 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    name: "build - crystal: ${{ matrix.crystal }}, stable: ${{ matrix.stable }}"
+
+    continue-on-error: ${{ !matrix.stable }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        stable: [true]
+        crystal:
+          - 1.0.0
+          - 1.6.0
+          - 1.9.2
+        include:
+          - crystal: nightly
+            stable: false
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Crystal
-        uses: oprypin/install-crystal@v1
+        uses: crystal-lang/install-crystal@v1.8.0
         with:
-          crystal: 1.0.0
+          crystal: ${{ matrix.crystal }}
 
       - name: Cache Shards
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./lib
           key: shards-${{ hashFiles('shard.lock') }}
@@ -48,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Build Docker
         run: docker-compose up -d
