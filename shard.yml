@@ -3,6 +3,7 @@ version: 0.1.0
 
 authors:
   - Omar Roth <omarroth@protonmail.com>
+  - Invidious team <contact@invidious.io>
 
 targets:
   instances:

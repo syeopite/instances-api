@@ -1,5 +1,5 @@
-# "instances.invidio.us" (which is a status page)
-# Copyright (C) 2019  Omar Roth
+# "instances-api" (which is a Instances API website for Invidious.)
+# Copyright (C) 2023  Invidious Team
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
