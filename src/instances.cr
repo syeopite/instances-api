@@ -24,7 +24,15 @@ macro rendered(filename)
   render "src/instances/views/#{{{filename}}}.ecr"
 end
 
-alias Instance = NamedTuple(flag: String?, region: String?, stats: JSON::Any?, cors: Bool?, api: Bool?, type: String, uri: String, monitor: JSON::Any?)
+alias Instance = NamedTuple(
+  flag: String?,
+  region: String?,
+  stats: JSON::Any?,
+  cors: Bool?,
+  api: Bool?,
+  type: String,
+  uri: String,
+  monitor: JSON::Any?)
 
 INSTANCES = {} of String => Instance
 
