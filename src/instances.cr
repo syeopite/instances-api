@@ -17,10 +17,14 @@
 require "http/client"
 require "kemal"
 require "uri"
+require "log"
 
 require "./instances/refresh"
 
 Kemal::CLI.new ARGV
+
+# LOG_LEVEL=<LEVEL>
+Log.setup_from_env
 
 macro rendered(filename)
   render "src/instances/views/#{{{filename}}}.ecr"

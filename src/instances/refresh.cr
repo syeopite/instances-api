@@ -2,13 +2,18 @@
 
 struct InstanceRefreshJob
   def begin
+    Log.trace { "Spawning fiber for instance list refresh" }
     spawn do
-      refreshed_instances_api_data = self.refresh_instances
-      INSTANCES.clear
-      INSTANCES.merge! refreshed_instances_api_data
+      Log.info { "Starting instance list refresh job" }
+      loop do
+        refreshed_instances_api_data = self.refresh_instances
+        INSTANCES.clear
+        INSTANCES.merge! refreshed_instances_api_data
 
-      sleep 5.minutes
-      Fiber.yield
+        Log.info { "Finished refreshing instance list. Sleeping for 5 minutes" }
+        sleep 5.minutes
+        Fiber.yield
+      end
     end
   end
 
@@ -30,17 +35,26 @@ struct InstanceRefreshJob
     select
     when monitors = monitor_channel.receive
     when timeout 5.minute # Timeout for fetching *all* uptime monitors
-    # TODO select old monitors
 
+
+      Log.warn { "Timed out while fetching uptime monitors" }
+      # TODO select old monitors
 
     end
 
     select
     when instances_stats_map = instance_stats_channel.receive
-    when timeout 20.minute # Timeout for fetching *all* instance /api/v1/stats endpoint
-    # TODO select old instances list
+    when timeout 20.minute # Timeout for fetching information from *all* instances
 
 
+      Log.warn { "Timed out while fetching instances information" }
+      # TODO select old instances list
+
+    end
+
+    if (!monitors || !instances_stats_map) || (monitors.empty? || instances_stats_map.empty?)
+      Log.error { "Unable to refresh instances list" }
+      return INSTANCES
     end
 
     monitors = monitors.not_nil!
@@ -83,6 +97,8 @@ struct InstanceRefreshJob
   end
 
   private def get_instances_stats
+    Log.trace { "Beginning process of fetching instance information" }
+
     instances = {} of String => Instance
     instance_stats_transfer_channel = Channel(Tuple(String, Instance)).new
 
@@ -90,6 +106,8 @@ struct InstanceRefreshJob
 
     self.get_each_instance do |raw_instance_definition|
       count += 1
+
+      Log.trace { "Spawning fiber to fetch instance information for `#{raw_instance_definition["host"]}`" }
 
       spawn do
         instance_stats_transfer_channel.send(fetch_instance_stats(raw_instance_definition))
@@ -100,10 +118,13 @@ struct InstanceRefreshJob
       select
       when transfer = instance_stats_transfer_channel.receive
         host, stats = transfer
+        Log.debug { "Fetched instance information for #{host}" }
+
         instances[host] = stats
-      when timeout 30.second # Timeout for parsing stats of a single instance
+      when timeout 30.second # Timeout parsing stats of a single instance
 
 
+        Log.warn { "Timed out while fetching information regarding an instance" }
       end
     end
 
@@ -129,7 +150,11 @@ struct InstanceRefreshJob
 
       begin
         stats = JSON.parse(client.get("/api/v1/stats").body)
+      rescue ex : IO::TimeoutError
+        Log.warn { "Timed out after attempting to request stats information from `/api/v1/stats` of `#{uri}` for 10 seconds" }
+        stats = nil
       rescue ex : Exception
+        Log.error { "Failed to request `/api/v1/stats` of `#{uri}` Error: #{ex}\n#{ex.backtrace.join("\n")}" }
         stats = nil
       end
 
@@ -148,8 +173,11 @@ struct InstanceRefreshJob
 
           api = true
         end
+      rescue ex : IO::TimeoutError
+        Log.warn { "Timed out after attempting to request `/api/v1/trending` of `#{uri}` for 10 seconds. Failed to get api and cors status." }
       rescue ex : Exception
         # TODO log unable to parse API/CORS status
+        Log.error { "Failed to request `/api/v1/trending` of `#{uri}` Unable to get api and cors status. Error: #{ex}\n#{ex.backtrace.join("\n")}" }
       end
     end
 
@@ -170,32 +198,38 @@ struct InstanceRefreshJob
     begin
       body = HTTP::Client.get(URI.parse("https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md")).body
     rescue ex
-      body = "" # TODO
+      Log.error { "Failed to fetch instance list. Error: #{ex}\n#{ex.backtrace.join("\n")}" }
+      body = ""
     end
 
-    body = body.split("### Blocked:")[0] # TODO error handle here
+    body = body.split("### Blocked:")[0]
     body.scan(/\[(?<host>[^ \]]+)\]\((?<uri>[^\)]+)\)( .(?<region>[\x{1f100}-\x{1f1ff}]{2}))?/mx).each do |md|
       yield md
     end
   end
 
   private def get_uptime_monitors
+    Log.trace { "Beginning process of fetching uptime monitors" }
+
     initial_page = fetch_uptime_api_info(1)
     psp = initial_page["psp"]
     monitors = psp["monitors"].as_a
 
     page = 1
     remaining_pages = (psp["totalMonitors"].as_i / psp["perPage"].as_i).ceil.to_i - 1
+    Log.debug { "Fetched initial uptime monitor page 1#{remaining_pages + 1}" }
 
     channel = Channel(JSON::Any).new
 
     remaining_pages.times do
       page += 1
+      Log.trace { "Spawning fiber to fetch page #{page}/#{remaining_pages + 1} of uptime monitors" }
       spawn fetch_uptime_api_info(page, channel)
     end
 
     remaining_pages.times do
       response = channel.receive
+      Log.debug { "Fetched uptime monitor page #{page}/#{remaining_pages + 1}" }
       monitors += response["psp"]["monitors"].as_a
     end
 
