@@ -18,6 +18,8 @@ require "http/client"
 require "kemal"
 require "uri"
 
+require "./instances/refresh"
+
 Kemal::CLI.new ARGV
 
 macro rendered(filename)
@@ -36,86 +38,7 @@ alias Instance = NamedTuple(
 
 INSTANCES = {} of String => Instance
 
-spawn do
-  loop do
-    monitors = [] of JSON::Any
-    page = 1
-    loop do
-      begin
-        client = HTTP::Client.new(URI.parse("https://stats.uptimerobot.com/89VnzSKAn"))
-        client.connect_timeout = 10.seconds
-        client.read_timeout = 10.seconds
-        response = JSON.parse(client.get("/api/getMonitorList/89VnzSKAn?page=#{page}").body)
-
-        monitors += response["psp"]["monitors"].as_a
-        page += 1
-
-        break if response["psp"]["perPage"].as_i * (page - 1) + 1 > response["psp"]["totalMonitors"].as_i
-      rescue ex
-        error_message = response.try &.as?(String).try &.["errorStats"]?
-        error_message ||= ex.message
-        puts "Error pulling monitors: #{error_message}"
-        break
-      end
-    end
-    begin
-      body = HTTP::Client.get(URI.parse("https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md")).body
-    rescue ex
-      body = ""
-    end
-
-    instances = {} of String => Instance
-
-    body = body.split("### Blocked:")[0]
-    body.scan(/\[(?<host>[^ \]]+)\]\((?<uri>[^\)]+)\)( .(?<region>[\x{1f100}-\x{1f1ff}]{2}))?/mx).each do |md|
-      region = md["region"]?.try { |region| region.codepoints.map { |codepoint| (codepoint - 0x1f1a5).chr }.join("") }
-      flag = md["region"]?
-
-      uri = URI.parse(md["uri"])
-      host = md["host"]
-
-      case type = host.split(".")[-1]
-      when "onion"
-      when "i2p"
-      else
-        type = uri.scheme.not_nil!
-        client = HTTP::Client.new(uri)
-        client.connect_timeout = 10.seconds
-        client.read_timeout = 10.seconds
-        begin
-          req = client.get("/api/v1/stats")
-          stats = JSON.parse(req.body)
-
-          api = false
-          cors = false
-          req = client.get("/api/v1/trending")
-          if req.status_code == 200
-            begin
-              cors = (req.headers["Access-Control-Allow-Origin"] == "*")
-
-              # Try to parse the json and validate the api response
-              trending = JSON.parse(req.body)
-              trending[0]["videoId"].as_s
-              api = true
-            rescue
-              puts "Cant parse API json"
-            end
-          end
-        rescue ex
-          stats = nil
-        end
-      end
-
-      monitor = monitors.try &.select { |monitor| monitor["name"].try &.as_s == host }[0]?
-      instances[host] = {flag: flag, region: region, stats: stats, cors: cors, api: api, type: type, uri: uri.to_s, monitor: monitor || instances[host]?.try &.[:monitor]?}
-    end
-
-    INSTANCES.clear
-    INSTANCES.merge! instances
-
-    sleep 5.minutes
-  end
-end
+InstanceRefreshJob.new.begin
 
 before_all do |env|
   env.response.headers["X-XSS-Protection"] = "1; mode=block"
