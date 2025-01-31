@@ -1,10 +1,18 @@
 require "json"
 
+# Enum containing instance types understood by instances-api
+# Any instance that isn't explicitly supported is assumed to be clearnet
+enum InstanceType
+  Onion
+  I2P
+  Clearnet
+end
+
 # Represents a single Invidious instance
 struct Instance
   include ASR::Serializable
-  property url : URI
-  property instance_type : String # HTTP, onion, etc
+  property  url : URI
+  property  instance_type : InstanceType
   property? region : String?
   property? flag : String?
   property? stats : JSON::Any?
