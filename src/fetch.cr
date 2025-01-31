@@ -1,6 +1,6 @@
 require "http/client"
 
-module InstancesApi::Fetch
+module InstancesApi::Instances::Fetch
   module Interface
     abstract def fetch_instance_list : String
   end
@@ -10,7 +10,7 @@ module InstancesApi::Fetch
   @[ADI::Register]
   @[ADI::AsAlias]
   struct FetchInstancesFromDocs
-    include InstancesApi::Fetch::Interface
+    include Fetch::Interface
 
     Client = HTTP::Client.new(URI.parse("https://raw.githubusercontent.com"))
 

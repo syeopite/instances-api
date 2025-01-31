@@ -1,10 +1,10 @@
-module InstancesApi::Extract
+module InstancesApi::Instances::Extract
   # Intermediate object representing a instance listed on the documentation
   # This means that we'll only have URL, scheme and region to go off of before
   # additional requests populate the other fields
   struct IntermediateInstance
     property url : URI
-    property instance_type : InstanceType # HTTP, onion, etc
+    property instance_type : IAI::InstanceType # HTTP, onion, etc
     property flag : String?
     property region : String?
 
@@ -35,14 +35,14 @@ module InstancesApi::Extract
     end
 
     # Identifies the type of the instance via the URL eg clearnet, onion, etc.
-    private def identify_instance_type(url : URI) : InstanceType
+    private def identify_instance_type(url : URI) : IAI::InstanceType
       type_identifier = url.host.try &.split(".")[-1]
 
       if !type_identifier.nil?
-        return InstanceType.parse?(type_identifier) || InstanceType::Clearnet
+        return IAI::InstanceType.parse?(type_identifier) || IAI::InstanceType::Clearnet
       end
 
-      return InstanceType::Clearnet
+      return IAI::InstanceType::Clearnet
     end
   end
 end
