@@ -46,3 +46,21 @@ class InstancesStorage
 end
 
 INSTANCES = InstancesStorage.new
+
+@[ADI::Register(name:"obtain_new_instances", public: true)]
+class ObtainNewInstances
+  @extractor = InstancesApi::Extract::ExtractInstances
+
+  def initialize(
+    @fetcher : InstancesApi::Fetch::Interface,
+  )
+  end
+
+  def extract(instance_list : String)
+    return @extractor.extract_instances(instance_list)
+  end
+
+  def fetch()
+    return @fetcher.fetch_instance_list
+  end
+end

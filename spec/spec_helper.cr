@@ -1,2 +1,3 @@
 require "spec"
-require "../src/instances-api"
+require "uri"
+require "athena"
