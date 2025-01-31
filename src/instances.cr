@@ -9,16 +9,10 @@ enum InstanceType
 end
 
 # Represents a single Invidious instance
-struct Instance
+record Instance, url : URI, instance_type : InstanceType,
+                 region : String?, flag : String?, stats : JSON::Any?,
+                 monitor : JSON::Any?, cors : Bool?, api : Bool? do
   include ASR::Serializable
-  property  url : URI
-  property  instance_type : InstanceType
-  property? region : String?
-  property? flag : String?
-  property? stats : JSON::Any?
-  property? monitor : JSON::Any?
-  property? cors : Bool?
-  property? api : Bool?
 end
 
 # Allows accessing instances in a thread-safe manner

@@ -5,8 +5,8 @@ module InstancesApi::Extract
   struct IntermediateInstance
     property url : URI
     property instance_type : InstanceType # HTTP, onion, etc
-    property? flag : String?
-    property? region : String?
+    property flag : String?
+    property region : String?
 
     def initialize(@url, @instance_type, @flag, @region)
     end
