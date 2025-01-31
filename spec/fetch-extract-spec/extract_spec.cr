@@ -8,7 +8,7 @@ class MockFetchInstances
   property file : String = ""
 
   def fetch_instance_list : String
-    return File.read("./mocks/#{file}")
+    return File.read("../mocks/#{file}")
   rescue File::NotFoundError
     return ""
   end
