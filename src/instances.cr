@@ -15,30 +15,7 @@ module InstancesApi::Instances
     include ASR::Serializable
   end
 
-  # Allows accessing instances in a thread-safe manner
-  class InstancesStorage
-    @mutex : Mutex
-
-    def initialize(@instances = {} of String => Instance)
-      @mutex = Mutex.new
-    end
-
-    def instances
-      self.instances do |processed_instances|
-        return processed_instances
-      end
-    end
-
-    def instances(&)
-      @mutex.lock
-      begin
-        yield @instances
-      ensure
-        @mutex.unlock
-      end
-    end
-  end
-
+  Helpers.create_mutex_storage("InstancesStorage", "instances", {} of String => Instance)
   INSTANCES = InstancesStorage.new
 
   @[ADI::Register(name: "obtain_new_instances", public: true)]

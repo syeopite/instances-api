@@ -2,11 +2,12 @@ require "log"
 
 require "athena"
 
+require "./config"
+require "./helpers"
+
 require "./instances.cr"
 require "./fetch.cr"
 require "./extract.cr"
-
-require "./config"
 
 Config = InstancesApi::YamlConfig.load
 
@@ -17,10 +18,12 @@ module InstancesApi
   class Controller < ATH::Controller
     @[ARTA::Get(path: "/instances.json")]
     def root : ATH::Response
-      return ATH::Response.new(
-        ASR.serializer.serialize(IAI::INSTANCES.instances, :json),
-        headers: HTTP::Headers{"content-type" => "application/json; charset=UTF-8"}
-      )
+      IAI::INSTANCES.get do | instances |
+        return ATH::Response.new(
+          ASR.serializer.serialize(instances, :json),
+          headers: HTTP::Headers{"content-type" => "application/json; charset=UTF-8"}
+        )
+      end
     end
   end
 end
@@ -29,7 +32,7 @@ spawn do
   instance_list = ADI.container.obtain_new_instances.fetch
   extracted_instances = ADI.container.obtain_new_instances.extract(instance_list)
 
-  IAI::INSTANCES.instances do |instances|
+  IAI::INSTANCES.get do |instances|
     instances.clear
 
     extracted_instances.each do |extracted_instance|
