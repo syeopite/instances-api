@@ -1,7 +1,14 @@
+require "log"
+
 require "athena"
+
 require "./instances.cr"
 require "./fetch.cr"
 require "./extract.cr"
+
+require "./config"
+
+Config = InstancesApi::YamlConfig.load
 
 alias IAI = InstancesApi::Instances
 
