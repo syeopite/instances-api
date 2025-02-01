@@ -1,0 +1,43 @@
+{
+    "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion": {
+        "url": null,
+        "instance_type": "onion",
+        "region": "CL",
+        "flag": "🇨🇱"
+    },
+    "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p": {
+        "url": null,
+        "instance_type": "i2_p",
+        "region": "CL",
+        "flag": "🇨🇱"
+    },
+    "inv.nadeko.net": {
+        "url": null,
+        "instance_type": "clearnet",
+        "region": "CL",
+        "flag": "🇨🇱",
+        "stats": {
+            "version": "2.0",
+            "software": {
+                "name": "invidious",
+                "version": "2025.01.25-d75d860",
+                "branch": "master"
+            },
+            "openRegistrations": false,
+            "usage": {
+                "users": {
+                    "total": 11040,
+                    "activeHalfyear": 8616,
+                    "activeMonth": 1
+                }
+            },
+            "metadata": {
+                "updatedAt": 1738369167,
+                "lastChannelRefreshedAt": 1738369116
+            },
+            "playback": {}
+        },
+        "api": false,
+        "cors": false
+    }
+}

@@ -1,8 +1,22 @@
 module InstancesApi::Helpers
-  macro create_mutex_storage(storage_name, key, value)
-    class {{storage_name.id}}
+  extend self
+
+  module InstanceWrapperInterface
+    abstract def get
+  end
+
+  # Wraps a mutex around some object
+  macro create_mutex_storage(storage_name, key, value, initialize = false, type = Type)
+    struct {{storage_name.id}}
       @mutex : Mutex = Mutex.new()
-      @{{key.id}} = {{value}}
+      {% if !initialize %}
+        @{{key.id}} = {{value}}
+      {% else %}
+        def initialize(@{{key.id}} : {{type.id}})
+        end
+      {% end %}
+
+      {{yield}}
 
       def get(&)
         @mutex.lock
@@ -14,4 +28,22 @@ module InstancesApi::Helpers
       end
     end
   end
+
+  # HTTP::Client is wrapped around a mutex just in case. There shouldn't be any fiber that will
+  # access the same HTTP::Client
+  create_mutex_storage("RequestClient", "client", nil, initialize: true, type: HTTP::Client) do
+    def self.new(url)
+      client = HTTP::Client.new(url)
+
+      client.dns_timeout=10.seconds
+      client.read_timeout=10.seconds
+      client.connect_timeout=10.seconds
+      client.write_timeout=10.seconds
+
+      return new(client)
+    end
+  end
+
+  create_mutex_storage("RequestClientsStorage", "clients", {} of String => RequestClient)
+  RequestClients = RequestClientsStorage.new
 end

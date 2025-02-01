@@ -1,0 +1,34 @@
+{
+    "inv.nadeko.net": {
+        "path": {
+            "/api/v1/stats": {
+                "body": {
+                    "version": "2.0",
+                    "software": {
+                        "name": "invidious",
+                        "version": "2025.01.25-d75d860",
+                        "branch": "master"
+                    },
+                    "openRegistrations": false,
+                    "usage": {
+                        "users": {
+                            "total": 11040,
+                            "activeHalfyear": 8616,
+                            "activeMonth": 1
+                        }
+                    },
+                    "metadata": {
+                        "updatedAt": 1738369167,
+                        "lastChannelRefreshedAt": 1738369116
+                    },
+                    "playback": {}
+                }
+            },
+
+            "/api/v1/trending": {
+                "body": "API disabled",
+                "status_code": 401
+            }
+        }
+    }
+}

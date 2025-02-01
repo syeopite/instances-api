@@ -1,18 +1,5 @@
 require "./fetch_extract_helper.cr"
 
-@[ADI::Register(public: true)]
-@[ADI::AsAlias]
-class MockFetchInstances
-  include IAI::Fetch::Interface
-
-  property file : String = ""
-
-  def fetch_instance_list : String
-    return File.read("../mocks/#{file}")
-  rescue File::NotFoundError
-    return ""
-  end
-end
 
 macro aiist(url, instance_type, region)
   IIst.new(
@@ -25,7 +12,7 @@ end
 
 describe IAI::Extract do
   it "Can extract instances from the instance list" do
-    ADI.container.mock_fetch_instances.file = "basic-list.md"
+    ADI.container.mock_fetch_instances.file = "basic/basic-list.md"
     instance_list = ADI.container.obtain_new_instances.fetch
 
     ADI.container.obtain_new_instances.extract(instance_list).should eq([
