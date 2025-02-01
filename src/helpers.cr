@@ -46,4 +46,11 @@ module InstancesApi::Helpers
 
   create_mutex_storage("RequestClientsStorage", "clients", {} of String => RequestClient)
   RequestClients = RequestClientsStorage.new
+
+  def get_serialization_ctx
+    ctx = ASR::SerializationContext.new()
+    ctx.emit_nil = true
+
+    return ctx
+  end
 end

@@ -1,21 +1,27 @@
 {
     "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion": {
-        "url": null,
-        "instance_type": "onion",
+        "flag": "🇨🇱",
         "region": "CL",
-        "flag": "🇨🇱"
+        "stats": null,
+        "cors": null,
+        "api": null,
+        "type": "onion",
+        "uri": "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion",
+        "monitor": null
     },
     "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p": {
-        "url": null,
-        "instance_type": "i2_p",
+        "flag": "🇨🇱",
         "region": "CL",
-        "flag": "🇨🇱"
+        "stats": null,
+        "cors": null,
+        "api": null,
+        "type": "i2p",
+        "uri": "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p",
+        "monitor": null
     },
     "inv.nadeko.net": {
-        "url": null,
-        "instance_type": "clearnet",
-        "region": "CL",
         "flag": "🇨🇱",
+        "region": "CL",
         "stats": {
             "version": "2.0",
             "software": {
@@ -37,7 +43,10 @@
             },
             "playback": {}
         },
+        "cors": false,
         "api": false,
-        "cors": false
+        "type": "https",
+        "uri": "inv.nadeko.net",
+        "monitor": null
     }
 }

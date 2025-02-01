@@ -23,7 +23,7 @@ module InstancesApi
     def root : ATH::Response
       IAI::INSTANCES.get do |instances|
         return ATH::Response.new(
-          ASR.serializer.serialize(instances, :json),
+          ASR.serializer.serialize(instances, :json, context: Helpers.get_serialization_ctx),
           headers: HTTP::Headers{"content-type" => "application/json; charset=UTF-8"}
         )
       end

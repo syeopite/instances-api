@@ -8,7 +8,7 @@ describe IAI::Populate do
     ADI.bind mock_file, "spec/mocks/basic/query.json"
     populated_instances = ADI.container.obtain_new_instances.populate(extracted_instances)
 
-    results = JSON.parse(ASR.serializer.serialize(populated_instances, :json))
+    results = JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: InstancesApi::Helpers.get_serialization_ctx))
     answer = JSON.parse(File.read("spec/mocks/basic/populated.json"))
 
     results.as_h.should eq answer.as_h

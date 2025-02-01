@@ -11,12 +11,40 @@ module InstancesApi::Instances
   end
 
   # Represents a single Invidious instance
-  record Instance, url : URI, instance_type : InstanceType,
-    region : String?, flag : String?, stats : JSON::Any?,
-    monitor : JSON::Any?, cors : Bool?, api : Bool? do
+  @[ASRA::AccessorOrder(:custom, order: ["flag", "region", "stats", "cors", "api", "type", "uri", "monitor"])]
+  struct Instance
     include ASR::Serializable
 
     alias TYPE = JSON::Any | URI | InstanceType | String | Bool | Nil
+
+    @[ASRA::IgnoreOnDeserialize]
+    @[ASRA::IgnoreOnSerialize]
+    property url : URI
+
+    @[ASRA::IgnoreOnDeserialize]
+    @[ASRA::IgnoreOnSerialize]
+    property instance_type : InstanceType
+
+    property region : String?
+    property flag : String?
+
+    property stats : JSON::Any?
+    property monitor : JSON::Any?
+    property cors : Bool?
+    property api : Bool?
+
+    @[ASRA::VirtualProperty]
+    @[ASRA::Name(serialize: "type")]
+    def get_instance_type : String
+      return "https" if instance_type == InstanceType::Clearnet
+      return @instance_type.to_s.downcase
+    end
+
+    @[ASRA::VirtualProperty]
+    @[ASRA::Name(serialize: "uri")]
+    def get_url : String
+      return @url.host.not_nil!
+    end
 
     # Constructs a fully populated `Instance` object from an `IntermediateInstance` and `InstanceData`
     def self.construct(
@@ -49,6 +77,9 @@ module InstancesApi::Instances
         api: args["api"]?.as(Bool?),
         monitor: args["monitor"].as(JSON::Any?),
       )
+    end
+
+    def initialize(@url, @instance_type, @region, @flag, @stats, @monitor, @cors, @api)
     end
   end
 
