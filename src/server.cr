@@ -38,7 +38,7 @@ spawn do
 
   IAI::INSTANCES.get do |instances|
     instances.clear
-    instances.merge!(populated_instances)
+    instances.replace(populated_instances)
   end
 end
 

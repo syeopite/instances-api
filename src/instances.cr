@@ -83,7 +83,7 @@ module InstancesApi::Instances
     end
   end
 
-  Helpers.create_mutex_storage("InstancesStorage", "instances", {} of String => Instance)
+  Helpers.create_mutex_storage("InstancesStorage", "instances", [] of {String, Instance})
   INSTANCES = InstancesStorage.new
 
   @[ADI::Register(name: "obtain_new_instances", public: true)]
@@ -119,7 +119,7 @@ module InstancesApi::Instances
         end
       end
 
-      full_instances = {} of String => Instance
+      full_instances = [] of {String, Instance}
 
       intermediate_instances.size.times do
         select
@@ -132,7 +132,7 @@ module InstancesApi::Instances
           end
 
           aiist = intermediate_instances_hash[host]
-          full_instances[host] = Instance.construct(aiist, instance_data)
+          full_instances << {host, Instance.construct(aiist, instance_data)}
         when timeout(10.seconds)
           Log.info { "A timeout occurred when trying to populate an instance" }
         end
