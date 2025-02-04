@@ -83,8 +83,16 @@ module InstancesApi::Instances
     end
   end
 
-  Helpers.create_mutex_storage("InstancesStorage", "instances", [] of {String, Instance})
-  INSTANCES = InstancesStorage.new
+  @[ADI::Register(name: "instances_provider")]
+  # Provides parsed list of instances
+  struct Provider
+    Helpers.create_mutex_storage("InstancesStorage", "instances", [] of {String, Instance})
+    private INSTANCES = InstancesStorage.new
+
+    def get(&)
+      INSTANCES.get { | instances | yield instances }
+    end
+  end
 
   @[ADI::Register(name: "obtain_new_instances", public: true)]
   class ObtainNewInstances
