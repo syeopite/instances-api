@@ -61,7 +61,7 @@ module IAI::Populate
     private def get_stats
       stats = @query_instance.get("/api/v1/stats")
       return JSON.parse(stats.body)
-    rescue JSON::ParseException
+    rescue
       return nil
     end
 
@@ -92,8 +92,8 @@ module IAI::Populate
 
     private def check_cors
       response = @query_instance.get("/api/v1/trending")
-      return (response.headers["Access-Control-Allow-Origin"]?.try { |h| h == '*' }) || false
-    rescue Exception
+      return (response.headers["Access-Control-Allow-Origin"]?.try { |h| h == "*" }) || false
+    rescue
       return nil
     end
 

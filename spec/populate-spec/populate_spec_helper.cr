@@ -20,7 +20,16 @@ struct MockQueryInstance
   end
 
   private def response(json)
-    body = json["body"].to_json
+    if json["error"]?
+      raise Exception.new
+    end
+
+    if json["body"]?
+      body = json["body"].to_json
+    else
+      body = "{}"
+    end
+
     status_code = json["status_code"]?.try &.as_i || 200
     headers = parse_headers(json)
 

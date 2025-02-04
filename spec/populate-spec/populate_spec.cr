@@ -18,4 +18,21 @@ Spectator.describe IAI::Populate::PopulateInstance do
 
     expect(results.as_a).to match_array answer.as_a
   end
+
+  it "Can gracefully handle request errors during instance population" do
+    ADI.container.mock_fetch_instances.file = "spec/mocks/populate-request-errors/list.md"
+
+    instance_list = ADI.container.obtain_new_instances.fetch
+    expect(instance_list).to ne ""
+
+    extracted_instances = ADI.container.obtain_new_instances.extract(instance_list)
+
+    ADI.container.mock_query_instance_wrapper_wrapper.mock_file = "spec/mocks/populate-request-errors/query.json"
+    populated_instances = ADI.container.obtain_new_instances.populate(extracted_instances)
+
+    results = JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: InstancesApi::Helpers.get_serialization_ctx))
+    answer = JSON.parse(File.read("spec/mocks/populate-request-errors/populated.json"))
+
+    expect(results.as_a).to match_array answer.as_a
+  end
 end

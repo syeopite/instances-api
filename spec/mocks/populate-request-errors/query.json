@@ -1,0 +1,62 @@
+{
+    "missing-stats-no-trending-with-cors-but-null-all.example.com": {
+        "path": {
+            "/api/v1/trending": {
+                "status_code": 403,
+                "error": true,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*"
+                }
+            }
+        }
+    },
+
+    "missing-stats-with-trending-no-cors.example.com": {
+        "path": {
+            "/api/v1/trending": {
+                "status_code": 200,
+                "body": [{
+                    "videoId": "id"
+                }]
+            }
+        }
+    },
+
+    "with-everything.example.com": {
+        "path": {
+            "/api/v1/stats": {
+                "body": {
+                    "version": "2.0",
+                    "software": {
+                        "name": "invidious",
+                        "version": "2025.01.25-164d764",
+                        "branch": "master"
+                    },
+                    "openRegistrations": false,
+                    "usage": {
+                        "users": {
+                            "total": 1,
+                            "activeHalfyear": 1,
+                            "activeMonth": 1
+                        }
+                    },
+                    "metadata": {
+                        "updatedAt": 1738369167,
+                        "lastChannelRefreshedAt": 1738369116
+                    },
+                    "playback": {}
+                }
+            },
+
+            "/api/v1/trending": {
+                "status_code": 200,
+                "body": [{
+                    "videoId": "id"
+                }],
+                "headers": {
+                    "Access-Control-Allow-Origin": "*"
+                }
+            }
+        }
+    }
+}

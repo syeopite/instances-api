@@ -1,0 +1,61 @@
+[
+    [
+        "missing-stats-no-trending-with-cors-but-null-all.example.com",
+        {
+            "flag": "🇫🇷",
+            "region": "FR",
+            "stats": null,
+            "cors": null,
+            "api": null,
+            "type": "https",
+            "uri": "missing-stats-no-trending-with-cors-but-null-all.example.com",
+            "monitor": null
+        }
+    ],
+    [
+        "missing-stats-with-trending-no-cors.example.com",
+        {
+            "flag": "🇹🇭",
+            "region": "TH",
+            "stats": null,
+            "cors": false,
+            "api": true,
+            "type": "https",
+            "uri": "missing-stats-with-trending-no-cors.example.com",
+            "monitor": null
+        }
+    ],
+    [
+        "with-everything.example.com",
+        {
+            "flag": "🇲🇱",
+            "region": "ML",
+            "stats": {
+                "version": "2.0",
+                "software": {
+                    "name": "invidious",
+                    "version": "2025.01.25-164d764",
+                    "branch": "master"
+                },
+                "openRegistrations": false,
+                "usage": {
+                    "users": {
+                        "total": 1,
+                        "activeHalfyear": 1,
+                        "activeMonth": 1
+                    }
+                },
+                "metadata": {
+                    "updatedAt": 1738369167,
+                    "lastChannelRefreshedAt": 1738369116
+                },
+                "playback": {}
+            },
+            "cors": true,
+            "api": true,
+            "type": "https",
+            "uri": "with-everything.example.com",
+            "monitor": null
+        }
+    ]
+]
