@@ -24,13 +24,9 @@ module InstancesApi
     end
 
     @[ARTA::Get(path: "/instances.json")]
-    def root : ATH::Response
-      @provider.get do |instances|
-        return ATH::Response.new(
-          ASR.serializer.serialize(instances, :json, context: Helpers.get_serialization_ctx),
-          headers: HTTP::Headers{"content-type" => "application/json; charset=UTF-8"}
-        )
-      end
+    @[ATHA::View(emit_nil: true)]
+    def instances : Array(Tuple(String, IAI::Instance))
+      @provider.get &.itself
     end
   end
 
