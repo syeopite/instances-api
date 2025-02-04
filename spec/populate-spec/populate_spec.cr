@@ -3,9 +3,11 @@ require "athena"
 
 Spectator.describe IAI::Populate::PopulateInstance do
   it "Can produce populated instance list" do
-    ADI.container.mock_fetch_instances.file = "basic/basic-list.md"
+    ADI.container.mock_fetch_instances.file = "spec/mocks/basic/basic-list.md"
 
     instance_list = ADI.container.obtain_new_instances.fetch
+    expect(instance_list).to ne ""
+
     extracted_instances = ADI.container.obtain_new_instances.extract(instance_list)
 
     ADI.container.mock_query_instance_wrapper_wrapper.mock_file = "spec/mocks/basic/query.json"
