@@ -11,7 +11,7 @@ end
 
 Spectator.describe IAI::Extract do
   it "Can extract instances from the instance list" do
-    ADI.container.mock_fetch_instances.file = "basic/basic-list.md"
+    ADI.container.mock_fetch_instances.file = "spec/mocks/basic/basic-list.md"
     instance_list = ADI.container.obtain_new_instances.fetch
 
     expect(ADI.container.obtain_new_instances.extract(instance_list)).to eq([

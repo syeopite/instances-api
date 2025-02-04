@@ -9,7 +9,8 @@ module InstancesApi::Instances::Fetch
   # and parses the result into an `IntermediateInstance`
   @[ADI::Register(_client: HTTP::Client.new(Config.instance_list_location))]
   @[ADI::AsAlias]
-  struct FetchInstancesFromDocs
+  # Use class for now until https://github.com/athena-framework/athena/issues/512 is fixed
+  class FetchInstancesFromDocs
     include Fetch::Interface
 
     def initialize(@client : HTTP::Client)
