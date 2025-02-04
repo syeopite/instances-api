@@ -35,10 +35,10 @@ module InstancesApi::Helpers
     def self.new(url)
       client = HTTP::Client.new(url)
 
-      client.dns_timeout=10.seconds
-      client.read_timeout=10.seconds
-      client.connect_timeout=10.seconds
-      client.write_timeout=10.seconds
+      client.dns_timeout = 10.seconds
+      client.read_timeout = 10.seconds
+      client.connect_timeout = 10.seconds
+      client.write_timeout = 10.seconds
 
       return new(client)
     end
@@ -48,7 +48,7 @@ module InstancesApi::Helpers
   RequestClients = RequestClientsStorage.new
 
   def get_serialization_ctx
-    ctx = ASR::SerializationContext.new()
+    ctx = ASR::SerializationContext.new
     ctx.emit_nil = true
 
     return ctx

@@ -1,16 +1,19 @@
 require "./populate_spec_helper.cr"
+require "athena"
 
-describe IAI::Populate do
+Spectator.describe IAI::Populate::PopulateInstance do
   it "Can produce populated instance list" do
     ADI.container.mock_fetch_instances.file = "basic/basic-list.md"
+
     instance_list = ADI.container.obtain_new_instances.fetch
     extracted_instances = ADI.container.obtain_new_instances.extract(instance_list)
-    ADI.bind mock_file, "spec/mocks/basic/query.json"
+
+    ADI.container.mock_query_instance_wrapper_wrapper.mock_file = "spec/mocks/basic/query.json"
     populated_instances = ADI.container.obtain_new_instances.populate(extracted_instances)
 
     results = JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: InstancesApi::Helpers.get_serialization_ctx))
     answer = JSON.parse(File.read("spec/mocks/basic/populated.json"))
 
-    results.as_h.should eq answer.as_h
+    expect(results.as_a).to match_array answer.as_a
   end
 end

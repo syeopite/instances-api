@@ -9,6 +9,15 @@ dependencies:
     github: athena-framework/framework
     version: ~> 0.20.0
 
+development_dependencies:
+  spectator:
+    gitlab: arctic-fox/spectator
+    version: ~> 0.12.0
+
+  athena-spec:
+    github: athena-framework/spec
+    version: ~> 0.3.0
+
 targets:
   instances-api:
     main: src/instances-api.cr

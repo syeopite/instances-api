@@ -5,14 +5,13 @@ require "../spec_helper.cr"
 require "../../src/populate.cr"
 require "../fetch-extract-spec/fetch_extract_helper.cr"
 
-@[ADI::Register(public: true)]
-record GetTestMock, mock_file : String
-
+# Simulates requests by fetching the data from a mock file instead
+# instead of HTTP requests to a remote server
 struct MockQueryInstance
   include IAI::Populate::InstanceQueryInterface
 
-  def initialize(@url : URI)
-    @mock_file = JSON.parse(File.read(ADI.container.get_test_mock.mock_file))
+  def initialize(@url : URI, mock_file_path : String)
+    @mock_file = JSON.parse File.read(mock_file_path)
   end
 
   def get(url)
@@ -21,7 +20,7 @@ struct MockQueryInstance
   end
 
   private def response(json)
-    body = json["body"].to_json()
+    body = json["body"].to_json
     status_code = json["status_code"]?.try &.as_i || 200
     headers = parse_headers(json)
 
@@ -38,7 +37,7 @@ struct MockQueryInstance
     mock_headers = json["headers"]?
     return headers if mock_headers.nil?
 
-    mock_headers.as_h.each do | k, v |
+    mock_headers.as_h.each do |k, v|
       headers.add(k, v.as_s)
     end
 
@@ -46,12 +45,38 @@ struct MockQueryInstance
   end
 end
 
+# Wrapper around `MockQueryInstance` that provides a location of a mock file
+# to the `MockQueryInstance`
+struct MockQueryInstanceWrapper
+  def initialize(@mock_file : String)
+  end
+
+  def new(url : URI)
+    return MockQueryInstance.new(url, @mock_file)
+  end
+end
+
 @[ADI::Register(public: true)]
 @[ADI::AsAlias(InstancesApi::Helpers::InstanceWrapperInterface)]
-struct MockQueryInstanceWrapperWrapper
+# Wrapper around a wrapper that initializes MockQueryInstance
+#
+# The original implementation wraps one layer due to `PopulateInstance` needing
+# to initialize `QueryInstance` with a url, and ADI services always being initialized.
+#
+# The mock implementation however also needs to pass the location of the mock data file
+# into the `MockQueryInstance` object. And considering `MockQueryInstance` is used
+# in a new Fiber, we cannot register and modify it through ADI.container from a test block.
+#
+# As such we provide the mock file location to this outermost wrapper, which provides compatibility
+# with how `QueryInstanceWrapper` is used by creating an intermediate object holding the location with
+# a faux `#new` constructor method that will finally initialize a `MockQueryInstance` with both the given url
+# and the location of the mock data.
+class MockQueryInstanceWrapperWrapper
   include InstancesApi::Helpers::InstanceWrapperInterface
 
-  def get : MockQueryInstance.class
-    return MockQueryInstance
+  property mock_file : String = ""
+
+  def get
+    return MockQueryInstanceWrapper.new(@mock_file)
   end
 end

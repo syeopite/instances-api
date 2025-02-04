@@ -36,7 +36,15 @@ shards:
     git: https://github.com/athena-framework/serializer.git
     version: 0.4.0
 
+  athena-spec:
+    git: https://github.com/athena-framework/spec.git
+    version: 0.3.9
+
   athena-validator:
     git: https://github.com/athena-framework/validator.git
     version: 0.4.0
+
+  spectator:
+    git: https://gitlab.com/arctic-fox/spectator.git
+    version: 0.12.1
 

@@ -37,10 +37,15 @@ module IAI::Populate
 
   @[ADI::Register]
   @[ADI::AsAlias(InstancesApi::Helpers::InstanceWrapperInterface)]
-  struct QueryInstanceWrapper
+  {%
+  # Note: QueryInstanceWrapper is a class due to an upstream bug in Athena dependency injection
+  # that prevents other interfaces from being a class unless the default implement is a class
+  %}
+  # This allows `PopulateInstance` to initialize `QueryInstance` with a URI
+  class QueryInstanceWrapper
     include InstancesApi::Helpers::InstanceWrapperInterface
 
-    def get : QueryInstance.class
+    def get
       return QueryInstance
     end
   end
@@ -72,7 +77,7 @@ module IAI::Populate
       begin
         if trending.status_code == 200
           trending = JSON.parse(trending.body)
-          check =  trending.as_a?.try &.[0]["videoId"].try &.as_s
+          check = trending.as_a?.try &.[0]["videoId"].try &.as_s
 
           return check.is_a? String
         end
@@ -87,7 +92,7 @@ module IAI::Populate
 
     private def check_cors
       response = @query_instance.get("/api/v1/trending")
-      return (response.headers["Access-Control-Allow-Origin"]?.try {|h| h=='*'}) || false
+      return (response.headers["Access-Control-Allow-Origin"]?.try { |h| h == '*' }) || false
     rescue Exception
       return nil
     end

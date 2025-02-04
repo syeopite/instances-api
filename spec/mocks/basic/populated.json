@@ -1,52 +1,61 @@
-{
-    "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion": {
-        "flag": "🇨🇱",
-        "region": "CL",
-        "stats": null,
-        "cors": null,
-        "api": null,
-        "type": "onion",
-        "uri": "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion",
-        "monitor": null
-    },
-    "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p": {
-        "flag": "🇨🇱",
-        "region": "CL",
-        "stats": null,
-        "cors": null,
-        "api": null,
-        "type": "i2p",
-        "uri": "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p",
-        "monitor": null
-    },
-    "inv.nadeko.net": {
-        "flag": "🇨🇱",
-        "region": "CL",
-        "stats": {
-            "version": "2.0",
-            "software": {
-                "name": "invidious",
-                "version": "2025.01.25-d75d860",
-                "branch": "master"
+[
+    [
+        "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion",
+        {
+            "flag": "\ud83c\udde8\ud83c\uddf1",
+            "region": "CL",
+            "stats": null,
+            "cors": null,
+            "api": null,
+            "type": "onion",
+            "uri": "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion",
+            "monitor": null
+        }
+    ],
+    [
+        "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p",
+        {
+            "flag": "\ud83c\udde8\ud83c\uddf1",
+            "region": "CL",
+            "stats": null,
+            "cors": null,
+            "api": null,
+            "type": "i2p",
+            "uri": "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p",
+            "monitor": null
+        }
+    ],
+    [
+        "inv.nadeko.net",
+        {
+            "flag": "\ud83c\udde8\ud83c\uddf1",
+            "region": "CL",
+            "stats": {
+                "version": "2.0",
+                "software": {
+                    "name": "invidious",
+                    "version": "2025.01.25-d75d860",
+                    "branch": "master"
+                },
+                "openRegistrations": false,
+                "usage": {
+                    "users": {
+                        "total": 11040,
+                        "activeHalfyear": 8616,
+                        "activeMonth": 1
+                    }
+                },
+                "metadata": {
+                    "updatedAt": 1738369167,
+                    "lastChannelRefreshedAt": 1738369116
+                },
+                "playback": {}
             },
-            "openRegistrations": false,
-            "usage": {
-                "users": {
-                    "total": 11040,
-                    "activeHalfyear": 8616,
-                    "activeMonth": 1
-                }
-            },
-            "metadata": {
-                "updatedAt": 1738369167,
-                "lastChannelRefreshedAt": 1738369116
-            },
-            "playback": {}
-        },
-        "cors": false,
-        "api": false,
-        "type": "https",
-        "uri": "inv.nadeko.net",
-        "monitor": null
-    }
-}
+            "cors": false,
+            "api": false,
+            "type": "https",
+            "uri": "inv.nadeko.net",
+            "monitor": null
+        }
+    ]
+]
