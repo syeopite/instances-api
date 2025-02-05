@@ -44,8 +44,31 @@ module InstancesApi::Helpers
     end
   end
 
-  create_mutex_storage("RequestClientsStorage", "clients", {} of String => RequestClient)
-  RequestClients = RequestClientsStorage.new
+  @[ADI::Register]
+  struct ClientProvider
+    private InstancesApi::Helpers.create_mutex_storage("RequestClientsStorage", "clients", {} of String => RequestClient)
+    private RequestClients = RequestClientsStorage.new
+
+    def get(&block)
+      RequestClients.get(&block)
+    end
+
+    def client(url : URI)
+      if !(host = url.host)
+        raise Exception.new
+      end
+
+      RequestClients.get do |clients|
+        if client = clients[host]?
+        else
+          client = Helpers::RequestClient.new(url)
+          clients[host] = client
+        end
+
+        return client
+      end
+    end
+  end
 
   def get_serialization_ctx
     ctx = ASR::SerializationContext.new

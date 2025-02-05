@@ -1,33 +1,18 @@
 # The populate module requests the instance to obtain various information about the instance.
 # Each request is done in its own fiber and communicated via channels.
 module IAI::Populate
-  module InstanceQueryInterface
+  module InstanceQuerierInterface
     abstract def get(url)
   end
 
   # Requests an instance to obtain stats, api availability, and cors status
-  struct QueryInstance
-    include InstanceQueryInterface
+  struct InstanceQuerier
+    include InstanceQuerierInterface
 
     @client : Helpers::RequestClient
 
-    def initialize(url : URI)
-      if !(host = url.host)
-        raise Exception.new
-      end
-
-      client = nil
-
-      Helpers::RequestClients.get do |clients|
-        if client = clients[host]?
-        else
-          client = Helpers::RequestClient.new(url)
-          clients[host] = client
-        end
-      end
-
-      raise Exception.new if client.nil?
-      @client = client
+    def initialize(@client_provider : InstancesApi::Helpers::ClientProvider, url : URI)
+      @client = client_provider.client(url)
     end
 
     def get(url)
@@ -36,17 +21,31 @@ module IAI::Populate
   end
 
   @[ADI::Register]
+  # Constructs instances of `InstanceQuerier`
+  struct InstanceQuerierBuilder
+    def initialize(@client_provider : InstancesApi::Helpers::ClientProvider)
+    end
+
+    # Constructs a new instance of `InstanceQuerier` with the given url
+    def new(url : URI)
+      return InstanceQuerier.new(@client_provider, url)
+    end
+  end
+
+  @[ADI::Register]
   @[ADI::AsAlias(InstancesApi::Helpers::InstanceWrapperInterface)]
-  {%
-  # Note: QueryInstanceWrapper is a class due to an upstream bug in Athena dependency injection
-  # that prevents other interfaces from being a class unless the default implement is a class
-  %}
-  # This allows `PopulateInstance` to initialize `QueryInstance` with a URI
-  class QueryInstanceWrapper
+  # A factory service that returns an InstanceQuerierBuilder to construct InstanceQuerier instances
+  #
+  # This convoluted pathway allows `PopulateInstance` to initialize `InstanceQuerier` with a uri
+  # and also allows us to inject the ClientProvider service into it
+  class InstanceQuerierFactory
     include InstancesApi::Helpers::InstanceWrapperInterface
 
+    def initialize(@instance_querier_builder : IAI::Populate::InstanceQuerierBuilder)
+    end
+
     def get
-      return QueryInstance
+      return @instance_querier_builder
     end
   end
 
@@ -54,12 +53,12 @@ module IAI::Populate
   record InstanceData, stats : JSON::Any?, api : Bool?, cors : Bool?
 
   struct PopulateInstance
-    def initialize(@host : String, @query_instance : InstanceQueryInterface)
+    def initialize(@host : String, @instance_querier : InstanceQuerierInterface)
     end
 
-    # Use @query_instance to request /api/v1/stats
+    # Use @instance_querier to request /api/v1/stats
     private def get_stats
-      stats = @query_instance.get("/api/v1/stats")
+      stats = @instance_querier.get("/api/v1/stats")
       return JSON.parse(stats.body)
     rescue
       return nil
@@ -72,7 +71,7 @@ module IAI::Populate
     #
     # TODO: Check multiple endpoints to assess availability
     private def check_api
-      trending = @query_instance.get("/api/v1/trending")
+      trending = @instance_querier.get("/api/v1/trending")
 
       begin
         if trending.status_code == 200
@@ -91,7 +90,7 @@ module IAI::Populate
     end
 
     private def check_cors
-      response = @query_instance.get("/api/v1/trending")
+      response = @instance_querier.get("/api/v1/trending")
       return (response.headers["Access-Control-Allow-Origin"]?.try { |h| h == "*" }) || false
     rescue
       return nil

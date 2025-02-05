@@ -7,8 +7,8 @@ require "../fetch-extract-spec/fetch_extract_helper.cr"
 
 # Simulates requests by fetching the data from a mock file instead
 # instead of HTTP requests to a remote server
-struct MockQueryInstance
-  include IAI::Populate::InstanceQueryInterface
+struct MockInstanceQuerier
+  include IAI::Populate::InstanceQuerierInterface
 
   def initialize(@url : URI, mock_file_path : String)
     @mock_file = JSON.parse File.read(mock_file_path)
@@ -54,38 +54,26 @@ struct MockQueryInstance
   end
 end
 
-# Wrapper around `MockQueryInstance` that provides a location of a mock file
-# to the `MockQueryInstance`
-struct MockQueryInstanceWrapper
+struct MockInstanceQuerierBuilder
   def initialize(@mock_file : String)
   end
 
   def new(url : URI)
-    return MockQueryInstance.new(url, @mock_file)
+    return MockInstanceQuerier.new(url, @mock_file)
   end
 end
 
 @[ADI::Register(public: true)]
 @[ADI::AsAlias(InstancesApi::Helpers::InstanceWrapperInterface)]
-# Wrapper around a wrapper that initializes MockQueryInstance
+# A factory service that returns an MockInstanceQuerierBuilder to construct MockInstanceQuerier instances
 #
-# The original implementation wraps one layer due to `PopulateInstance` needing
-# to initialize `QueryInstance` with a url, and ADI services always being initialized.
-#
-# The mock implementation however also needs to pass the location of the mock data file
-# into the `MockQueryInstance` object. And considering `MockQueryInstance` is used
-# in a new Fiber, we cannot register and modify it through ADI.container from a test block.
-#
-# As such we provide the mock file location to this outermost wrapper, which provides compatibility
-# with how `QueryInstanceWrapper` is used by creating an intermediate object holding the location with
-# a faux `#new` constructor method that will finally initialize a `MockQueryInstance` with both the given url
-# and the location of the mock data.
-class MockQueryInstanceWrapperWrapper
+# Exposes a mock_file setter to change where the `MockInstanceQuerier` retrieves its data from.
+class MockInstanceQuerierFactory
   include InstancesApi::Helpers::InstanceWrapperInterface
 
   property mock_file : String = ""
 
   def get
-    return MockQueryInstanceWrapper.new(@mock_file)
+    return MockInstanceQuerierBuilder.new(@mock_file)
   end
 end
