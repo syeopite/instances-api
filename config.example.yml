@@ -1,3 +1,14 @@
 # instance_list_location: "https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md"
 # monitor_api_key:
 # instance_refresh_interval: 300
+
+# Number of seconds before an HTTP request gets timed out
+# http_request_timeout: 60
+
+# Number of seconds to wait for the fetching *and* parsing of an instance's data
+# before timing out.
+# per_instance_populate_await_timeout: 30
+
+# Number of seconds to wait for the fetching *and* parsing of uptime monitor
+# before timing out
+# monitor_fetch_await_timeout: 30

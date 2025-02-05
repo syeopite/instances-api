@@ -99,6 +99,7 @@ module InstancesApi::Instances
     @extractor = IAI::Extract::ExtractInstances
 
     def initialize(
+      @config : InstancesApi::Config::Provider,
       @fetcher : IAI::Fetch::Interface,
       @instance_querier : InstancesApi::Helpers::InstanceWrapperInterface,
       @uptime_monitor_fetcher : IAI::Monitors::FetcherInterface,
@@ -152,7 +153,7 @@ module InstancesApi::Instances
       ) do
         select
         when monitors = monitor_channel.receive
-        when timeout(10.seconds)
+        when timeout(@config.monitor_fetch_await_timeout.seconds)
           monitors = nil
         end
       end
@@ -177,7 +178,7 @@ module InstancesApi::Instances
 
             aiist = intermediate_instances_hash[host]
             full_instances << {host, Instance.construct(aiist, instance_data, monitor)}
-          when timeout(10.seconds)
+          when timeout(@config.per_instance_populate_await_timeout.seconds)
             Log.error { "A timeout occurred when trying to populate an instance" }
           end
         end

@@ -32,13 +32,13 @@ module InstancesApi::Helpers
   # HTTP::Client is wrapped around a mutex just in case. There shouldn't be any fiber that will
   # access the same HTTP::Client
   create_mutex_storage("RequestClient", "client", nil, initialize: true, type: HTTP::Client) do
-    def self.new(url)
+    def self.new(url, config : InstancesApi::Config::Provider)
       client = HTTP::Client.new(url)
 
-      client.dns_timeout = 10.seconds
-      client.read_timeout = 10.seconds
-      client.connect_timeout = 10.seconds
-      client.write_timeout = 10.seconds
+      client.dns_timeout = config.http_request_timeout.seconds
+      client.read_timeout = config.http_request_timeout.seconds
+      client.connect_timeout = config.http_request_timeout.seconds
+      client.write_timeout = config.http_request_timeout.seconds
 
       return new(client)
     end
@@ -48,6 +48,9 @@ module InstancesApi::Helpers
   struct ClientProvider
     private InstancesApi::Helpers.create_mutex_storage("RequestClientsStorage", "clients", {} of String => RequestClient)
     private RequestClients = RequestClientsStorage.new
+
+    def initialize(@config : InstancesApi::Config::Provider)
+    end
 
     def get(&block)
       RequestClients.get(&block)
@@ -61,7 +64,7 @@ module InstancesApi::Helpers
       RequestClients.get do |clients|
         if client = clients[host]?
         else
-          client = Helpers::RequestClient.new(url)
+          client = Helpers::RequestClient.new(url, @config)
           clients[host] = client
         end
 

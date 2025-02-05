@@ -14,6 +14,12 @@ class InstancesApi::Config::Provider
 
     property instance_refresh_interval : Int32 = 5*60
 
+    property http_request_timeout : Int32 = 60
+
+    property monitor_fetch_await_timeout : Int32 = 30
+
+    property per_instance_populate_await_timeout : Int32 = 30
+
     def self.load
       config = YamlConfig.from_yaml(File.read("config.yml"))
       return config
