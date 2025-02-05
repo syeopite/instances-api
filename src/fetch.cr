@@ -17,8 +17,8 @@ module InstancesApi::Instances::Fetch
     @client : InstancesApi::Helpers::RequestClient
 
     def initialize(
-      config :   InstancesApi::Config::Provider,
-      provider : InstancesApi::Helpers::ClientProvider
+      config : InstancesApi::Config::Provider,
+      provider : InstancesApi::Helpers::ClientProvider,
     )
       @client = provider.client(config.instance_list_location)
     end

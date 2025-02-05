@@ -30,20 +30,20 @@ class InstancesApi::Config::Provider
       Log.warn { "Unable to locate configuration file. Using the default settings." }
       return YamlConfig.from_yaml("")
     ensure
-        warn_msg = "monitor_api_key is required in order to fetch uptime information"
-        if !config
+      warn_msg = "monitor_api_key is required in order to fetch uptime information"
+      if !config
+        Log.warn { warn_msg }
+      end
+
+      config.try do |c|
+        if c.monitor_api_key.nil?
           Log.warn { warn_msg }
         end
-
-        config.try do | c |
-          if c.monitor_api_key.nil?
-            Log.warn { warn_msg }
-          end
-        end
+      end
     end
   end
 
-  private CONFIG = InstancesApi::YamlConfig.load()
+  private CONFIG = InstancesApi::YamlConfig.load
 
   {% for method in InstancesApi::YamlConfig.methods %}
     {% if method.args.empty? %}

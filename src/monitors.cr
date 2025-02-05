@@ -1,6 +1,6 @@
 module IAI::Monitors
   module FetcherInterface
-    def get(); end
+    def get; end
   end
 
   @[ADI::Register]
@@ -11,15 +11,15 @@ module IAI::Monitors
     @client : InstancesApi::Helpers::RequestClient
 
     def initialize(
-      @config :   InstancesApi::Config::Provider,
-      provider : InstancesApi::Helpers::ClientProvider
+      @config : InstancesApi::Config::Provider,
+      provider : InstancesApi::Helpers::ClientProvider,
     )
       @client = provider.client(URI.parse(
         "https://updown.io"
       ))
     end
 
-    def get() : JSON::Any?
+    def get : JSON::Any?
       return nil if @config.monitor_api_key.nil?
 
       response = (@client.get &.get("/api/checks?api-key=#{@config.monitor_api_key}"))

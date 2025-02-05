@@ -3,7 +3,6 @@ require "../../src/populate.cr"
 require "../fetch-extract-spec/fetch_extract_helper.cr"
 require "../populate-spec/populate_spec.cr"
 
-
 @[ADI::Register(public: true)]
 @[ADI::AsAlias(IAI::Monitors::FetcherInterface)]
 # Disables monitor fetching for the populate instance tests
@@ -12,7 +11,7 @@ class MockMonitorFetcher
 
   property mock_file : String? = nil
 
-  def get()
+  def get
     return nil if !(mock_file = @mock_file)
     return JSON.parse(File.read(mock_file))
   rescue File::NotFoundError
@@ -24,12 +23,11 @@ class MockMonitorFetcher
   end
 end
 
-
 def get_answer_with_monitor(answer_location, monitor_location)
   answer = JSON.parse(File.read(answer_location))
   uptime_monitors = JSON.parse(File.read(monitor_location))
 
-  answer.as_a.each do | instances |
+  answer.as_a.each do |instances|
     host, data = instances
     monitor = uptime_monitors.as_a.try &.select { |monitor| monitor["alias"]?.try &.as_s == host }[0]?
     data.as_h["monitor"] = monitor if monitor

@@ -15,7 +15,6 @@ require "../src/monitors.cr"
 
 Config = InstancesApi::YamlConfig.from_yaml("")
 
-
 # Ensure HTTP::Client is never called
 #
 # Taken from https://github.com/manastech/webmock.cr/blob/42b347cdd64e13193e46167a03593944ae2b3d20/src/webmock/core_ext.cr#L20
@@ -29,6 +28,6 @@ class HTTP::Client
   end
 
   private def exec_internal(request, &block : Response -> T) : T forall T
-    return HTTP::Client::Response.new(status_code=403)
+    return HTTP::Client::Response.new(status_code = 403)
   end
 end

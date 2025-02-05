@@ -90,7 +90,7 @@ module InstancesApi::Instances
     private INSTANCES = InstancesStorage.new
 
     def get(&)
-      INSTANCES.get { | instances | yield instances }
+      INSTANCES.get { |instances| yield instances }
     end
   end
 
@@ -106,7 +106,7 @@ module InstancesApi::Instances
     )
     end
 
-    private macro begin_rescue_block(message,  &block)
+    private macro begin_rescue_block(message, &block)
       begin
         {{block.body}}
       rescue ex : Exception
@@ -121,7 +121,7 @@ module InstancesApi::Instances
       # Receives parsed uptime monitors from the spawned fiber
       monitor_channel = Channel(JSON::Any?).new
 
-      spawn { monitor_channel.send(@uptime_monitor_fetcher.get()) }
+      spawn { monitor_channel.send(@uptime_monitor_fetcher.get) }
 
       # A string means that we weren't able to populate the instance so
       # we should just use the data of the intermediate instance

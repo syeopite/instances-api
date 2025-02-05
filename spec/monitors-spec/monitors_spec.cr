@@ -1,7 +1,6 @@
 require "./monitors_spec_helper.cr"
 
 Spectator.describe IAI::Monitors do
-
   def test_populate_with_monitors(list_location, instance_data_location, monitors_location)
     ADI.container.mock_fetch_instances.file = list_location
 
@@ -15,7 +14,6 @@ Spectator.describe IAI::Monitors do
 
     populated_instances = ADI.container.obtain_new_instances.populate(extracted_instances)
     return JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: InstancesApi::Helpers.get_serialization_ctx))
-
   end
 
   it "Is able to populate instances with uptime monitors" do
@@ -39,7 +37,7 @@ Spectator.describe IAI::Monitors do
 
     answer = JSON.parse(File.read("spec/mocks/basic/populated.json"))
 
-    answer.as_a.each { | instance | expect(instance[1]["monitor"].as_nil).to be_nil }
+    answer.as_a.each { |instance| expect(instance[1]["monitor"].as_nil).to be_nil }
 
     expect(results.as_a).to match_array answer.as_a
   end
@@ -55,7 +53,7 @@ Spectator.describe IAI::Monitors do
 
     answer = JSON.parse(File.read("spec/mocks/basic/populated.json"))
 
-    answer.as_a.each { | instance | expect(instance[1]["monitor"].as_nil).to be_nil }
+    answer.as_a.each { |instance| expect(instance[1]["monitor"].as_nil).to be_nil }
 
     expect(results.as_a).to match_array answer.as_a
   end
@@ -69,7 +67,7 @@ Spectator.describe IAI::Monitors do
 
     answer = JSON.parse(File.read("spec/mocks/basic/populated.json"))
 
-    answer.as_a.each { | instance | expect(instance[1]["monitor"].as_nil).to be_nil }
+    answer.as_a.each { |instance| expect(instance[1]["monitor"].as_nil).to be_nil }
 
     expect(results.as_a).to match_array answer.as_a
   end
