@@ -1,0 +1,80 @@
+body {
+    font-family: Open Sans, Arial;
+    margin: 40px auto;
+    color: #454545;
+    line-height: 1.2;
+    max-width: 1200px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    text-decoration: underline;
+}
+
+a:visited, a:active {
+    color: rgb(0, 102, 204);
+}
+
+table {
+    border: 1px solid #cbcbcb;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.right {
+    float: right;
+}
+
+td, th {
+    padding: 1em;
+    border-left: 1px solid #cbcbcb;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+thead {
+    text-align: left;
+    background: #e0e0e0;
+}
+
+#table-heading-health {
+    position: relative
+}
+
+#table-heading-health:after, #table-heading-health:before {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#table-heading-health:after {
+    background: #555;
+    padding: 10px;
+    border-radius: 10px;
+    width: 175px;
+    color: #fff;
+    text-align: center;
+    margin-top: 10px;
+
+}
+
+#table-heading-health:before {
+    content: "";
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #555;
+}
+
+#table-heading-health:hover:after, #table-heading-health:hover:before {
+    visibility: visible;
+    opacity: 1;
+}
