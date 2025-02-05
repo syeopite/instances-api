@@ -105,6 +105,14 @@ module InstancesApi::Instances
     )
     end
 
+    private macro begin_rescue_block(message,  &block)
+      begin
+        {{block.body}}
+      rescue ex : Exception
+        Log.error { "#{ {{message}} } #{ex.to_s}, #{ex.message}" }
+      end
+    end
+
     def populate(intermediate_instances : Array(Extract::IntermediateInstance))
       intermediate_instances_hash = {} of String => Extract::IntermediateInstance
       intermediate_instances.each { |aiist| intermediate_instances_hash[aiist.url.host.not_nil!] = aiist }
@@ -130,37 +138,48 @@ module InstancesApi::Instances
           else
             channel.send(host)
           end
+        rescue ex : Exception
+          Log.error { "An error occurred when fetching instance data #{ex.to_s}, #{ex.message}" }
+          channel.send(host)
         end
       end
 
-      # Monitors should be retrieved first when applicable
-      select
-      when monitors = monitor_channel.receive
-      when timeout(10.seconds)
-        monitors = nil
+      # Monitors should be retrieved first when
+
+      monitors = nil
+      begin_rescue_block(
+        "An error occurred when awaiting uptime monitors",
+      ) do
+        select
+        when monitors = monitor_channel.receive
+        when timeout(10.seconds)
+          monitors = nil
+        end
       end
 
       monitors = monitors.try &.as_a?
 
       full_instances = [] of {String, Instance}
 
-      intermediate_instances.size.times do
-        select
-        when package = channel.receive
-          if package.is_a? String
-            host = package
-            instance_data = nil
-          else
-            host, instance_data = package
+      begin_rescue_block("An error occurred when awaiting instance data population") do
+        intermediate_instances.size.times do
+          select
+          when package = channel.receive
+            if package.is_a? String
+              host = package
+              instance_data = nil
+            else
+              host, instance_data = package
+            end
+
+            # Identify specific uptime monitor for the instance
+            monitor = monitors.try &.select { |monitor| monitor.as_h?.try &.["alias"]?.try &.as_s == host }[0]?
+
+            aiist = intermediate_instances_hash[host]
+            full_instances << {host, Instance.construct(aiist, instance_data, monitor)}
+          when timeout(10.seconds)
+            Log.error { "A timeout occurred when trying to populate an instance" }
           end
-
-          # Identify specific uptime monitor for the instance
-          monitor = monitors.try &.select { |monitor| monitor.as_h?.try &.["alias"]?.try &.as_s == host }[0]?
-
-          aiist = intermediate_instances_hash[host]
-          full_instances << {host, Instance.construct(aiist, instance_data, monitor)}
-        when timeout(10.seconds)
-          Log.info { "A timeout occurred when trying to populate an instance" }
         end
       end
 
