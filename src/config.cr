@@ -1,22 +1,36 @@
 require "yaml"
+require "athena"
 
-# YAML Config
-struct InstancesApi::YamlConfig
-  include YAML::Serializable
+@[ADI::Register]
+class InstancesApi::Config::Provider
+  # YAML Config
+  struct InstancesApi::YamlConfig
+    include YAML::Serializable
 
-  @[YAML::Field(converter: URIConverter)]
-  property instance_list_location : URI = URI.parse("https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md")
+    @[YAML::Field(converter: URIConverter)]
+    property instance_list_location : URI = URI.parse("https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md")
 
-  def self.load
-    config = YamlConfig.from_yaml(File.read("config.yml"))
-    return config
-  rescue YAML::ParseException
-    STDERR.puts "Unable to parse config file"
-    return exit(1)
-  rescue File::NotFoundError
-    Log.warn { "**WARNING** Unable to locate configuration file. Using the default settings." }
-    return YamlConfig.from_yaml("")
+    def self.load
+      config = YamlConfig.from_yaml(File.read("config.yml"))
+      return config
+    rescue YAML::ParseException
+      STDERR.puts "Unable to parse config file"
+      return exit(1)
+    rescue File::NotFoundError
+      Log.warn { "**WARNING** Unable to locate configuration file. Using the default settings." }
+      return YamlConfig.from_yaml("")
+    end
   end
+
+  private CONFIG = InstancesApi::YamlConfig.load()
+
+  {% for method in InstancesApi::YamlConfig.methods %}
+    {% if method.args.empty? %}
+      def {{method.name.id}}
+        return CONFIG.{{method.name.id}}
+      end
+    {% end %}
+  {% end %}
 end
 
 # Taken from Invidious

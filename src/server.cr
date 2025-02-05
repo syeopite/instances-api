@@ -17,8 +17,6 @@ require "./populate.cr"
 
 require "./templates/template.cr"
 
-Config = InstancesApi::YamlConfig.load
-
 # TODO: Write documentation for `InstancesApi`
 module InstancesApi
   @[ADI::Register(public: true)]

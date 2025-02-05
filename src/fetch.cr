@@ -7,19 +7,26 @@ module InstancesApi::Instances::Fetch
 
   # Requests instance list from the Invidious documentation
   # and parses the result into an `IntermediateInstance`
-  @[ADI::Register(_client: HTTP::Client.new(Config.instance_list_location))]
-  @[ADI::AsAlias]
+  #
   # Use class for now until https://github.com/athena-framework/athena/issues/512 is fixed
+  @[ADI::Register]
+  @[ADI::AsAlias]
   class FetchInstancesFromDocs
     include Fetch::Interface
 
-    def initialize(@client : HTTP::Client)
+    @client : InstancesApi::Helpers::RequestClient
+
+    def initialize(
+      config :   InstancesApi::Config::Provider,
+      provider : InstancesApi::Helpers::ClientProvider
+    )
+      @client = provider.client(config.instance_list_location)
     end
 
     # Requests and parses the instances given with
     def fetch_instance_list : String
       begin
-        response = @client.get("/iv-org/documentation/master/docs/instances.md")
+        response = @client.get &.get("/iv-org/documentation/master/docs/instances.md")
         body = response.body
       rescue ex
         return ""
