@@ -155,7 +155,7 @@ module InstancesApi::Instances
           end
 
           # Identify specific uptime monitor for the instance
-          monitor = monitors.try &.select { |monitor| monitor["alias"].try &.as_s == host }[0]?
+          monitor = monitors.try &.select { |monitor| monitor.as_h?.try &.["alias"]?.try &.as_s == host }[0]?
 
           aiist = intermediate_instances_hash[host]
           full_instances << {host, Instance.construct(aiist, instance_data, monitor)}

@@ -1,0 +1,34 @@
+[
+    {
+        "token": "ozfh",
+        "url": "https://inv.nadeko.net",
+        "alias": "inv.nadeko.net",
+        "last_status": 200,
+        "uptime": 98.635,
+        "down": false,
+        "down_since": null,
+        "up_since": "2025-02-05T02:30:07Z",
+        "error": null,
+        "period": 300,
+        "apdex_t": 1.0,
+        "string_match": "An alternative front-end to YouTube",
+        "enabled": true,
+        "published": true,
+        "disabled_locations": [],
+        "recipients": [],
+        "last_check_at": "2025-02-05T20:45:18Z",
+        "next_check_at": "2025-02-05T20:50:17Z",
+        "created_at": "2024-11-10T21:31:53Z",
+        "mute_until": null,
+        "favicon_url": "https://inv.nadeko.net/favicon-16x16.png?v=d75d860",
+        "custom_headers": {},
+        "http_verb": "GET/HEAD",
+        "http_body": "",
+        "ssl": {
+            "tested_at": "2025-02-05T20:00:30Z",
+            "expires_at": "2025-04-14T16:13:28Z",
+            "valid": true,
+            "error": null
+        }
+    }
+]
