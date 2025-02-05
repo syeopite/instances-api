@@ -1,1 +1,3 @@
-instance_list_location = "https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md"
+# instance_list_location: "https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md"
+# monitor_api_key:
+# instance_refresh_interval: 300

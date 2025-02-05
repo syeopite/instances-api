@@ -12,6 +12,8 @@ class InstancesApi::Config::Provider
 
     property monitor_api_key : String? = nil
 
+    property instance_refresh_interval : Int32 = 5*60
+
     def self.load
       config = YamlConfig.from_yaml(File.read("config.yml"))
       return config
