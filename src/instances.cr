@@ -50,7 +50,7 @@ module InstancesApi::Instances
     def self.construct(
       intermediate_instance : IAI::Extract::IntermediateInstance,
       instance_data : IAI::Populate::InstanceData?,
-      # monitor_data : Type,
+      monitor_data : JSON::Any?,
     )
       args = {} of String => Instance::TYPE
 
@@ -65,7 +65,7 @@ module InstancesApi::Instances
         args["api"] = instance_data.api
       end
 
-      args["monitor"] = nil
+      args["monitor"] = monitor_data
 
       return self.new(
         url: args["url"].as(URI),
@@ -101,12 +101,18 @@ module InstancesApi::Instances
     def initialize(
       @fetcher : IAI::Fetch::Interface,
       @instance_querier : InstancesApi::Helpers::InstanceWrapperInterface,
+      @uptime_monitor_fetcher : IAI::Monitors::FetcherInterface,
     )
     end
 
     def populate(intermediate_instances : Array(Extract::IntermediateInstance))
       intermediate_instances_hash = {} of String => Extract::IntermediateInstance
       intermediate_instances.each { |aiist| intermediate_instances_hash[aiist.url.host.not_nil!] = aiist }
+
+      # Receives parsed uptime monitors from the spawned fiber
+      monitor_channel = Channel(JSON::Any?).new
+
+      spawn { monitor_channel.send(@uptime_monitor_fetcher.get()) }
 
       # A string means that we weren't able to populate the instance so
       # we should just use the data of the intermediate instance
@@ -127,6 +133,15 @@ module InstancesApi::Instances
         end
       end
 
+      # Monitors should be retrieved first when applicable
+      select
+      when monitors = monitor_channel.receive
+      when timeout(10.seconds)
+        monitors = nil
+      end
+
+      monitors = monitors.try &.as_a?
+
       full_instances = [] of {String, Instance}
 
       intermediate_instances.size.times do
@@ -139,8 +154,11 @@ module InstancesApi::Instances
             host, instance_data = package
           end
 
+          # Identify specific uptime monitor for the instance
+          monitor = monitors.try &.select { |monitor| monitor["alias"].try &.as_s == host }[0]?
+
           aiist = intermediate_instances_hash[host]
-          full_instances << {host, Instance.construct(aiist, instance_data)}
+          full_instances << {host, Instance.construct(aiist, instance_data, monitor)}
         when timeout(10.seconds)
           Log.info { "A timeout occurred when trying to populate an instance" }
         end

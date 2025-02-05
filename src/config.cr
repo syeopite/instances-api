@@ -10,6 +10,8 @@ class InstancesApi::Config::Provider
     @[YAML::Field(converter: URIConverter)]
     property instance_list_location : URI = URI.parse("https://raw.githubusercontent.com/iv-org/documentation/master/docs/instances.md")
 
+    property monitor_api_key : String? = nil
+
     def self.load
       config = YamlConfig.from_yaml(File.read("config.yml"))
       return config
@@ -17,8 +19,19 @@ class InstancesApi::Config::Provider
       STDERR.puts "Unable to parse config file"
       return exit(1)
     rescue File::NotFoundError
-      Log.warn { "**WARNING** Unable to locate configuration file. Using the default settings." }
+      Log.warn { "Unable to locate configuration file. Using the default settings." }
       return YamlConfig.from_yaml("")
+    ensure
+        warn_msg = "monitor_api_key is required in order to fetch uptime information"
+        if !config
+          Log.warn { warn_msg }
+        end
+
+        config.try do | c |
+          if c.monitor_api_key.nil?
+            Log.warn { warn_msg }
+          end
+        end
     end
   end
 

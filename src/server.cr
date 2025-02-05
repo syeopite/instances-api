@@ -14,6 +14,7 @@ require "./extract.cr"
 alias IAI = InstancesApi::Instances
 
 require "./populate.cr"
+require "./monitors.cr"
 
 require "./templates/template.cr"
 
