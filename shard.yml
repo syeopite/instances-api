@@ -13,6 +13,9 @@ development_dependencies:
   spectator:
     gitlab: arctic-fox/spectator
     version: ~> 0.12.0
+  ameba:
+    github: crystal-ameba/ameba
+    version: 1.6.4
 
 targets:
   instances-api:
