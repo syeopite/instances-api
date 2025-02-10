@@ -21,7 +21,10 @@ class InstancesApi::Config::Provider
     property per_instance_populate_await_timeout : Int32 = 30
 
     def self.load
-      config = YamlConfig.from_yaml(File.read("config.yml"))
+      env_config_yaml = "INVIDIOUS_INSTANCES_API_CONFIG"
+      config_yaml = ENV.has_key?(env_config_yaml) ? ENV.fetch(env_config_yaml) : File.read("config.yml")
+      config = YamlConfig.from_yaml(config_yaml)
+
       return config
     rescue YAML::ParseException
       STDERR.puts "Unable to parse config file"
