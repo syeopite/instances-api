@@ -82,4 +82,12 @@ end
 
 ADI.container.instances_api_refresh_instances_job.begin
 
+ATH.configure({
+  framework: {
+    view_handler: {
+      serialize_nil: true,
+    },
+  },
+})
+
 ATH.run

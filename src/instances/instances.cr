@@ -17,12 +17,12 @@ module InstancesApi::Instances
 
     alias TYPE = JSON::Any | URI | InstanceType | String | Bool | Nil
 
-    @[ASRA::IgnoreOnDeserialize]
-    @[ASRA::IgnoreOnSerialize]
+    @[ASRA::Accessor(getter: get_url)]
+    @[ASRA::Name(serialize: "uri")]
     property url : URI
 
-    @[ASRA::IgnoreOnDeserialize]
-    @[ASRA::IgnoreOnSerialize]
+    @[ASRA::Accessor(getter: get_instance_type)]
+    @[ASRA::Name(serialize: "type")]
     property instance_type : InstanceType
 
     property region : String?
@@ -33,15 +33,11 @@ module InstancesApi::Instances
     property cors : Bool?
     property api : Bool?
 
-    @[ASRA::VirtualProperty]
-    @[ASRA::Name(serialize: "type")]
     def get_instance_type : String
       return "https" if instance_type == InstanceType::Clearnet
       return @instance_type.to_s.downcase
     end
 
-    @[ASRA::VirtualProperty]
-    @[ASRA::Name(serialize: "uri")]
     def get_url : String
       return @url.host.not_nil!
     end
