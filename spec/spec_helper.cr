@@ -2,14 +2,15 @@ require "spectator"
 require "uri"
 require "athena"
 
-alias IAI = InstancesApi::Instances
-
 require "../src/config.cr"
 require "../src/helpers.cr"
 
+alias IAI = InstancesApi::Instances
 require "../src/instances/*"
 
-Config = InstancesApi::YamlConfig.from_yaml("")
+class InstancesApi::Config::Provider
+  @@CONFIG = InstancesApi::YamlConfig.from_yaml("")
+end
 
 # Ensure HTTP::Client is never called
 #

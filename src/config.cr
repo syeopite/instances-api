@@ -43,12 +43,12 @@ class InstancesApi::Config::Provider
     end
   end
 
-  private CONFIG = InstancesApi::YamlConfig.load
+  @@CONFIG : InstancesApi::YamlConfig = InstancesApi::YamlConfig.load
 
   {% for method in InstancesApi::YamlConfig.methods %}
     {% if method.args.empty? %}
       def {{method.name.id}}
-        return CONFIG.{{method.name.id}}
+        return @@CONFIG.{{method.name.id}}
       end
     {% end %}
   {% end %}
