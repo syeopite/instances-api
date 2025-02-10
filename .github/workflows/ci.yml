@@ -1,0 +1,94 @@
+name: instances-api CI
+
+on:
+  schedule:
+   - cron: "0 0 * * *" # Every day at 00:00
+  push:
+    branches:
+      - "master"
+      - "rewrite"
+  pull_request:
+    branches: "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: "Test on Crystal ${{ matrix.crystal }}, stable: ${{ matrix.stable }}"
+
+    continue-on-error: ${{ !matrix.stable }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        stable: [true]
+        crystal:
+          - 1.14.0
+          - 1.15.0
+        include:
+          - crystal: nightly
+            stable: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Cache Shards
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./lib
+            ./bin
+          key: shards-${{ hashFiles('shard.lock') }}
+
+      - name: Install Shards
+        run: |
+          if ! shards check; then
+            shards install
+          fi
+
+      - name: Run tests
+        run: crystal spec -p
+
+      - name: Try a build
+        run: crystal build --warnings all --error-on-warnings --error-trace src/server.cr --no-codegen
+
+  lint:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install Crystal
+        id: lint_step_install_crystal
+        uses: crystal-lang/install-crystal@v1.8.0
+        with:
+          crystal: latest
+
+      - name: Cache Shards
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./lib
+            ./bin
+          key: shards-${{ hashFiles('shard.lock') }}-${{ steps.lint_step_install_crystal.outputs.crystal }}
+
+      - name: Install Shards
+        run: |
+          if ! shards check; then
+            shards install
+          fi
+
+      - name: Check Crystal formatter compliance
+        run: |
+          if ! crystal tool format --check; then
+            crystal tool format
+            git diff
+            exit 1
+          fi
+
+      - name: Run Ameba linter
+        run: bin/ameba
