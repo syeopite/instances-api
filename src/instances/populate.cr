@@ -91,7 +91,7 @@ module IAI::Populate
 
     private def check_cors
       response = @instance_querier.get("/api/v1/trending")
-      return (response.headers["Access-Control-Allow-Origin"]?.try { |h| h == "*" }) || false
+      return (response.headers["Access-Control-Allow-Origin"]?.try &.==("*")) || false
     rescue
       return nil
     end

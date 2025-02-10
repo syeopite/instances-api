@@ -72,11 +72,4 @@ module InstancesApi::Helpers
       end
     end
   end
-
-  def get_serialization_ctx
-    ctx = ASR::SerializationContext.new
-    ctx.emit_nil = true
-
-    return ctx
-  end
 end

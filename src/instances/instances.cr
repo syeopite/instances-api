@@ -17,11 +17,11 @@ module InstancesApi::Instances
 
     alias TYPE = JSON::Any | URI | InstanceType | String | Bool | Nil
 
-    @[ASRA::Accessor(getter: get_url)]
+    @[ASRA::Accessor(getter: serialize_url)]
     @[ASRA::Name(serialize: "uri")]
     property url : URI
 
-    @[ASRA::Accessor(getter: get_instance_type)]
+    @[ASRA::Accessor(getter: serialize_instance_type)]
     @[ASRA::Name(serialize: "type")]
     property instance_type : InstanceType
 
@@ -33,12 +33,12 @@ module InstancesApi::Instances
     property cors : Bool?
     property api : Bool?
 
-    def get_instance_type : String
+    def serialize_instance_type : String
       return "https" if instance_type == InstanceType::Clearnet
       return @instance_type.to_s.downcase
     end
 
-    def get_url : String
+    def serialize_url : String
       return @url.host.not_nil!
     end
 
@@ -106,7 +106,7 @@ module InstancesApi::Instances
       begin
         {{block.body}}
       rescue ex : Exception
-        Log.error { "#{ {{message}} } #{ex.to_s}, #{ex.message}" }
+        Log.error { "#{ {{message}} } #{ex}, #{ex.message}" }
       end
     end
 
@@ -136,7 +136,7 @@ module InstancesApi::Instances
             channel.send(host)
           end
         rescue ex : Exception
-          Log.error { "An error occurred when fetching instance data #{ex.to_s}, #{ex.message}" }
+          Log.error { "An error occurred when fetching instance data #{ex}, #{ex.message}" }
           channel.send(host)
         end
       end
@@ -170,10 +170,10 @@ module InstancesApi::Instances
             end
 
             # Identify specific uptime monitor for the instance
-            monitor = monitors.try &.select { |monitor| monitor.as_h?.try &.["alias"]?.try &.as_s == host }[0]?
+            instance_monitor = monitors.try &.select { |monitor| monitor.as_h?.try &.["alias"]?.try &.as_s == host }[0]?
 
             aiist = intermediate_instances_hash[host]
-            full_instances << {host, Instance.construct(aiist, instance_data, monitor)}
+            full_instances << {host, Instance.construct(aiist, instance_data, instance_monitor)}
           when timeout(@config.per_instance_populate_await_timeout.seconds)
             Log.error { "A timeout occurred when trying to populate an instance" }
           end

@@ -30,9 +30,9 @@ module IAI::Monitors
 
       return JSON.parse(response.body)
     rescue ex : JSON::ParseException
-      Log.error { "Unable to parse the JSON for the uptime monitors: #{ex.to_s}, #{ex.message}" }
+      Log.error { "Unable to parse the JSON for the uptime monitors: #{ex}, #{ex.message}" }
     rescue ex : Exception
-      Log.error { "Error pulling uptime monitors: #{ex.to_s}, #{ex.message}" }
+      Log.error { "Error pulling uptime monitors: #{ex}, #{ex.message}" }
     end
   end
 end

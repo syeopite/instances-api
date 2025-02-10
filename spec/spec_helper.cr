@@ -9,7 +9,7 @@ alias IAI = InstancesApi::Instances
 require "../src/instances/*"
 
 class InstancesApi::Config::Provider
-  @@CONFIG = InstancesApi::YamlConfig.from_yaml("")
+  @@config = InstancesApi::YamlConfig.from_yaml("")
 end
 
 # Ensure HTTP::Client is never called
@@ -25,6 +25,17 @@ class HTTP::Client
   end
 
   private def exec_internal(request, &block : Response -> T) : T forall T
-    return HTTP::Client::Response.new(status_code = 403)
+    return HTTP::Client::Response.new(status_code: 403)
+  end
+end
+
+module SpecHelper
+  extend self
+
+  def serialization_ctx
+    ctx = ASR::SerializationContext.new
+    ctx.emit_nil = true
+
+    return ctx
   end
 end

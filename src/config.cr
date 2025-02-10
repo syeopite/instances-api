@@ -35,20 +35,18 @@ class InstancesApi::Config::Provider
         Log.warn { warn_msg }
       end
 
-      config.try do |c|
-        if c.monitor_api_key.nil?
-          Log.warn { warn_msg }
-        end
+      if config.try(&.monitor_api_key.nil?) || false
+        Log.warn { warn_msg }
       end
     end
   end
 
-  @@CONFIG : InstancesApi::YamlConfig = InstancesApi::YamlConfig.load
+  @@config : InstancesApi::YamlConfig = InstancesApi::YamlConfig.load
 
   {% for method in InstancesApi::YamlConfig.methods %}
     {% if method.args.empty? %}
       def {{method.name.id}}
-        return @@CONFIG.{{method.name.id}}
+        return @@config.{{method.name.id}}
       end
     {% end %}
   {% end %}

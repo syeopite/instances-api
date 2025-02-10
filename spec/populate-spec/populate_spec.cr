@@ -13,7 +13,7 @@ Spectator.describe IAI::Populate::PopulateInstance do
     ADI.container.mock_instance_querier_factory.mock_file = "spec/mocks/basic/query.json"
     populated_instances = ADI.container.obtain_new_instances.populate(extracted_instances)
 
-    results = JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: InstancesApi::Helpers.get_serialization_ctx))
+    results = JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: SpecHelper.serialization_ctx))
     answer = JSON.parse(File.read("spec/mocks/basic/populated.json"))
 
     expect(results.as_a).to match_array answer.as_a
@@ -30,7 +30,7 @@ Spectator.describe IAI::Populate::PopulateInstance do
     ADI.container.mock_instance_querier_factory.mock_file = "spec/mocks/populate-request-errors/query.json"
     populated_instances = ADI.container.obtain_new_instances.populate(extracted_instances)
 
-    results = JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: InstancesApi::Helpers.get_serialization_ctx))
+    results = JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: SpecHelper.serialization_ctx))
     answer = JSON.parse(File.read("spec/mocks/populate-request-errors/populated.json"))
 
     expect(results.as_a).to match_array answer.as_a

@@ -14,10 +14,10 @@ class MockMonitorFetcher
     return nil if !(mock_file = @mock_file)
     return JSON.parse(File.read(mock_file))
   rescue File::NotFoundError
-    Log.info { "mock file #{mock_file} not found" }
+    Log.info { "mock file #{mock_file} for mock uptime monitors not found" }
     return nil
   rescue ex : Exception
-    Log.error { "Error pulling uptime monitors: #{ex.to_s}, #{ex.message}" }
+    Log.error { "Error retrieving mock uptime monitor: #{ex}, #{ex.message}" }
     return nil
   end
 end
@@ -28,8 +28,8 @@ def get_answer_with_monitor(answer_location, monitor_location)
 
   answer.as_a.each do |instances|
     host, data = instances
-    monitor = uptime_monitors.as_a.try &.select { |monitor| monitor["alias"]?.try &.as_s == host }[0]?
-    data.as_h["monitor"] = monitor if monitor
+    instance_monitor = uptime_monitors.as_a.try &.select { |monitor| monitor["alias"]?.try &.as_s == host }[0]?
+    data.as_h["monitor"] = instance_monitor if instance_monitor
   end
 
   return answer

@@ -13,7 +13,7 @@ Spectator.describe IAI::Monitors do
     ADI.container.mock_monitor_fetcher.mock_file = monitors_location
 
     populated_instances = ADI.container.obtain_new_instances.populate(extracted_instances)
-    return JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: InstancesApi::Helpers.get_serialization_ctx))
+    return JSON.parse(ASR.serializer.serialize(populated_instances, :json, context: SpecHelper.serialization_ctx))
   end
 
   it "Is able to populate instances with uptime monitors" do

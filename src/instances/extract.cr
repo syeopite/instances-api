@@ -19,10 +19,10 @@ module InstancesApi::Instances::Extract
     def extract_instances(body) : Array(IntermediateInstance)
       intermediate_instances = [] of IntermediateInstance
 
-      body.scan(/\[(?<host>[^ \]]+)\]\((?<uri>[^\)]+)\)( .(?<region>[\x{1f100}-\x{1f1ff}]{2}))?/mx).each do |md|
-        url = URI.parse(md["uri"])
-        flag = md["region"]?
-        region = md["region"]?.try { |region| region.codepoints.map { |codepoint| (codepoint - 0x1f1a5).chr }.join("") }
+      body.scan(/\[(?<host>[^ \]]+)\]\((?<uri>[^\)]+)\)( .(?<region>[\x{1f100}-\x{1f1ff}]{2}))?/mx).each do |listed_instance|
+        url = URI.parse(listed_instance["uri"])
+        flag = listed_instance["region"]?
+        region = listed_instance["region"]?.try &.codepoints.map { |codepoint| (codepoint - 0x1f1a5).chr }.join("")
 
         instance_type = self.identify_instance_type(url)
 

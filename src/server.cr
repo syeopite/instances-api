@@ -72,7 +72,7 @@ module InstancesApi
           sleep @config.instance_refresh_interval.seconds
           Log.info { " Begin refreshing instance list " }
         rescue ex : Exception
-          Log.error { " An unknown error has occurred while refreshing instances: #{ex.to_s}, #{ex.message}. Retrying in #{@config.instance_refresh_interval.seconds} " }
+          Log.error { " An unknown error has occurred while refreshing instances: #{ex}, #{ex.message}. Retrying in #{@config.instance_refresh_interval.seconds} " }
           sleep @config.instance_refresh_interval.seconds
         end
       end
