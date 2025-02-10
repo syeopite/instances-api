@@ -1,5 +1,4 @@
 require "../spec_helper.cr"
-require "../../src/populate.cr"
 require "../fetch-extract-spec/fetch_extract_helper.cr"
 require "../populate-spec/populate_spec.cr"
 

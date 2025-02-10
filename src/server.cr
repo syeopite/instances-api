@@ -6,17 +6,10 @@ require "mime"
 
 require "./config"
 require "./helpers"
-
-require "./instances.cr"
-require "./fetch.cr"
-require "./extract.cr"
+require "./templates/template.cr"
 
 alias IAI = InstancesApi::Instances
-
-require "./populate.cr"
-require "./monitors.cr"
-
-require "./templates/template.cr"
+require "./instances/*"
 
 # TODO: Write documentation for `InstancesApi`
 module InstancesApi

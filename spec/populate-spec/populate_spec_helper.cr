@@ -2,7 +2,6 @@ require "uri"
 require "json"
 
 require "../spec_helper.cr"
-require "../../src/populate.cr"
 require "../fetch-extract-spec/fetch_extract_helper.cr"
 
 # Simulates requests by fetching the data from a mock file instead

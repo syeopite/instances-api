@@ -7,11 +7,7 @@ alias IAI = InstancesApi::Instances
 require "../src/config.cr"
 require "../src/helpers.cr"
 
-require "../src/instances.cr"
-require "../src/fetch.cr"
-require "../src/extract.cr"
-require "../src/populate.cr"
-require "../src/monitors.cr"
+require "../src/instances/*"
 
 Config = InstancesApi::YamlConfig.from_yaml("")
 
