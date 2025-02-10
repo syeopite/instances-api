@@ -41,6 +41,11 @@ jobs:
             ./bin
           key: shards-${{ hashFiles('shard.lock') }}
 
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1.8.0
+        with:
+          crystal: ${{ matrix.crystal }}
+
       - name: Install Shards
         run: |
           if ! shards check; then
